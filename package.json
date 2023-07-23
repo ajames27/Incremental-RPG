@@ -2,7 +2,7 @@
   "name": "incremental-rpg",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://ajames27.github.io/incremental-rpg/",
+  "homepage": "https://ajames27.github.io/Incremental-RPG/",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",

@@ -52,7 +52,7 @@ const Upgrades = () => {
                             margin: "4px",
                             padding: "12px",
                             width: "100px",
-                            height: "120px",
+                            height: "140px",
                             display: "flex",
                             flexDirection: "column",
                             justifyContent: "space-between",
@@ -62,6 +62,11 @@ const Upgrades = () => {
                     >
                         <p style={{ fontSize: "14px", fontWeight: "bold" }}>{upgrade.name}</p>
                         <p style={{ fontSize: "10px", margin: "5px" }}>{upgrade.description}</p>
+                        {unlockedUpgrades[upgradeName] ? (
+                            <p style={{ fontSize: "10px", margin: "5px", fontWeight: "bold" }}>
+                                Cost: {upgrade.unlock} exp
+                            </p>
+                        ) : null}
                         <button
                             disabled={exp < upgrade.unlock || (unlockedUpgrades[upgradeName] && upgrade.singleUse)}
                             onClick={() => buyUpgrade(upgradeName)}
