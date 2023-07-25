@@ -9,20 +9,33 @@ const TheButton = () => {
     const clickStrength =
         Object.values(unlockedUpgrades)
             .filter((upgrade) => upgrade.type === "clicker")
-            .reduce((acc, upgrade) => acc + upgrade.adder * upgrade.amount, 0) + 1;
+            .reduce((acc, upgrade) => acc + upgrade.strength * upgrade.amount, 0) + 1;
     const clicksPerSecond = Object.values(useStore.getState().unlockedUpgrades)
         .filter((upgrade) => upgrade.type === "automatic")
-        .reduce((acc, upgrade) => acc + upgrade.amount * upgrade.add, 0);
+        .reduce((acc, upgrade) => acc + upgrade.amount * upgrade.cps, 0);
+    const intervalTime = useStore((state) => state.intervalTime);
 
     return (
-        <div>
-            <p>Experience</p>
-            <p style={{ fontWeight: "bold", fontSize: "40px" }}>{exp}</p>
-            <p style={{ fontSize: "16px" }}>Click Strength:{clickStrength}</p>
-            <p style={{ fontSize: "16px" }}>Clicks per second:{clicksPerSecond}</p>
-            <p style={{ fontSize: "16px" }}>Highest Exp:{highestExp}</p>
+        <div
+            style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "20px",
+            }}
+        >
+            <p style={{ fontSize: "20px", margin: "5px" }}>Experience</p>
+            <p style={{ fontWeight: "bold", fontSize: "40px", margin: "30px" }}>{exp}</p>
+            <p style={{ fontSize: "16px", margin: "5px" }}>Click Strength: {clickStrength}</p>
+            <p style={{ fontSize: "16px", margin: "5px" }}>
+                Auto Clicks: {clicksPerSecond} clicks every {intervalTime / 1000} second
+                {intervalTime === 1000 ? "" : "s"}
+            </p>
+            <p style={{ fontSize: "16px", margin: "5px" }}>Highest Exp: {highestExp}</p>
+
             <button
-                onClick={clicker}
+                onClick={() => clicker(1)}
                 style={{
                     color: "white",
                     margin: "10px",
@@ -30,10 +43,13 @@ const TheButton = () => {
                     border: "2px solid white",
                     borderRadius: "5px",
                     fontSize: "40px",
+                    // width: "100px",
+                    // height: "80px",
                     padding: "12px",
+                    fontWeight: "bold",
                 }}
             >
-                Click
+                <p style={{ margin: "0px" }}>Click</p>
             </button>
         </div>
     );
