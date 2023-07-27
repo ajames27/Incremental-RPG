@@ -1,6 +1,12 @@
 //component that increments a counter
 import React from "react";
 import { useStore } from "../App.js";
+import { LineProgressBar } from "@frogress/line";
+
+const convertToIntegerPercentage = (experienceGainedThisLevel, experienceToNextLevel) => {
+    return Math.floor((experienceGainedThisLevel / experienceToNextLevel) * 100);
+};
+
 const TheButton = () => {
     const exp = useStore((state) => state.exp);
     const highestExp = useStore((state) => state.highestExp);
@@ -14,6 +20,9 @@ const TheButton = () => {
         .filter((upgrade) => upgrade.type === "automatic")
         .reduce((acc, upgrade) => acc + upgrade.amount * upgrade.cps, 0);
     const intervalTime = useStore((state) => state.intervalTime);
+    const level = useStore((state) => state.level);
+    const experienceToNextLevel = useStore((state) => state.experienceToNextLevel);
+    const experienceGainedThisLevel = useStore((state) => state.experienceGainedThisLevel);
 
     return (
         <div
@@ -26,13 +35,30 @@ const TheButton = () => {
             }}
         >
             <p style={{ fontSize: "20px", margin: "5px" }}>Experience</p>
-            <p style={{ fontWeight: "bold", fontSize: "40px", margin: "30px" }}>{exp}</p>
+            <p style={{ fontWeight: "bold", fontSize: "40px", margin: "30px" }}>{exp.toLocaleString()}</p>
             <p style={{ fontSize: "16px", margin: "5px" }}>Click Strength: {clickStrength}</p>
             <p style={{ fontSize: "16px", margin: "5px" }}>
                 Auto Clicks: {clicksPerSecond} clicks every {intervalTime / 1000} second
                 {intervalTime === 1000 ? "" : "s"}
             </p>
-            <p style={{ fontSize: "16px", margin: "5px" }}>Highest Exp: {highestExp}</p>
+            {/* <p style={{ fontSize: "16px", margin: "5px" }}>Highest Exp: {highestExp.toLocaleString()}</p> */}
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "12px",
+                }}
+            >
+                <p style={{ fontSize: "16px", margin: "5px" }}>Level: </p>
+                <p style={{ fontSize: "30px", margin: "5px", fontWeight: "bold" }}>{level}</p>
+            </div>
+
+            <LineProgressBar percent={convertToIntegerPercentage(experienceGainedThisLevel, experienceToNextLevel)} />
+            <p style={{ fontSize: "16px", margin: "5px" }}>
+                {experienceGainedThisLevel.toLocaleString()} / {experienceToNextLevel.toLocaleString()}
+            </p>
 
             <button
                 onClick={() => clicker(1)}

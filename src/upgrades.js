@@ -12,8 +12,7 @@
 // - amount: the amount of times the upgrade has been purchased
 const upgrades = {
     // upgrade names are in the format: "upgradeName"
-    // each upgrade's strength will be ten times the previous multiplier, and the unlock price will be 10 times the previous unlock price times the tier of upgrade
-    // for example the first upgrade will have a strength of 1 and an unlock of 10, the second upgrade will have a strength of 10 and an unlock of 200, the third upgrade will have a strength of 100 and an unlock of 3000, etc.
+
     clickOne: {
         name: "Click Strength I",
         type: "clicker",
@@ -34,6 +33,7 @@ const upgrades = {
         unique: false,
         max: 20,
         amount: 0,
+        requiresLevel: 3,
     },
     clickThree: {
         name: "Click Strength III",
@@ -44,6 +44,7 @@ const upgrades = {
         unique: false,
         max: 20,
         amount: 0,
+        requiresLevel: 4,
     },
     clickFour: {
         name: "Click Strength IV",
@@ -54,6 +55,7 @@ const upgrades = {
         unique: false,
         max: 20,
         amount: 0,
+        requiresLevel: 4,
     },
 
     // the next upgrades will be automated upgrades, they will add exp to the player's exp every second
@@ -65,9 +67,9 @@ const upgrades = {
         cps: 1,
         unlock: 100,
         unique: true,
-        // max: 5,
         amount: 0,
         isFirst: true,
+        requiresLevel: 2,
     },
     clickerTwo: {
         name: "Auto-clicker II",
@@ -76,8 +78,8 @@ const upgrades = {
         cps: 2,
         unlock: 2000,
         unique: true,
-        // max: 5,
         amount: 0,
+        requiresLevel: 4,
     },
     clickerThree: {
         name: "Auto-clicker III",
@@ -86,8 +88,8 @@ const upgrades = {
         cps: 3,
         unlock: 30000,
         unique: true,
-        // max: 5,
         amount: 0,
+        requiresLevel: 4,
     },
     //the next upgrades are "haste" upgrades, that will decrease the time between automatic clicks by a percentage
     //they are all single use upgrades
@@ -102,6 +104,7 @@ const upgrades = {
         isFirst: true,
         deprecates: true,
         deprecatesAt: 20000,
+        requiresLevel: 4,
     },
     hasteTwo: {
         name: "Haste II",
@@ -113,6 +116,8 @@ const upgrades = {
         amount: 0,
         deprecates: true,
         deprecatesAt: 300000,
+        requires: "hasteOne",
+        requiresLevel: 4,
     },
     hasteThree: {
         name: "Haste III",
@@ -122,6 +127,19 @@ const upgrades = {
         unlock: 300000,
         unique: true,
         amount: 0,
+        requires: "hasteTwo",
+        requiresLevel: 5,
+    },
+    hasteFour: {
+        name: "Haste IV",
+        type: "haste",
+        description: "Decreases the time between automatic clicks by 40%",
+        hastpct: 0.6,
+        unlock: 4000000,
+        unique: true,
+        amount: 0,
+        requires: "hasteThree",
+        requiresLevel: 6,
     },
 };
 

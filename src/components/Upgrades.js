@@ -44,21 +44,14 @@ const UpgradeList = () => {
                 );
 
                 return (
-                    <div styles={styles.upgradeListContainer}>
+                    <div key={upgradeType} styles={styles.upgradeListContainer}>
                         {showHeader ? <p style={styles.upgradeHeader}>{upgradeHeader}</p> : null}
-                        <div className="upgradeList" ref={animationParent} key={upgradeType} style={styles.upgradeList}>
+                        <div className="upgradeList" ref={animationParent} style={styles.upgradeList}>
                             {Object.entries(upgrades)
                                 .filter(([upgradeName, upgrade]) => upgrade.type === upgradeType)
                                 .map(([upgradeName, upgrade]) => {
                                     let show = false;
                                     if (upgrade.unlock <= highestExp) {
-                                        // if (upgrade.unique) {
-                                        //     if (!unlockedUpgrades[upgradeName]) {
-                                        //         show = true;
-                                        //     }
-                                        // } else {
-                                        //     show = true;
-                                        // }
                                         show = true;
                                     }
                                     if (
@@ -86,12 +79,18 @@ const UpgradeButton = ({ upgradeName, upgrade }) => {
     const exp = useStore((state) => state.exp);
     const unlockedUpgrades = useStore((state) => state.unlockedUpgrades);
     const handleUpgrade = useStore((state) => state.handleUpgrade);
-    const highestExp = useStore((state) => state.highestExp);
     const intervalTime = useStore((state) => state.intervalTime);
+    const level = useStore((state) => state.level);
 
     const isMaxed = unlockedUpgrades[upgradeName] && unlockedUpgrades[upgradeName].amount >= upgrade.max;
     const unique = unlockedUpgrades[upgradeName] && upgrade.unique;
     const xpTooLow = exp < upgrade.unlock;
+    const missingRequirement = upgrade.requires && !unlockedUpgrades[upgrade.requires];
+    const missingLevelRequirement = upgrade.requiresLevel && level < upgrade.requiresLevel;
+    const isUniqueAndOwned = unlockedUpgrades[upgradeName] && upgrade.unique;
+    console.log("level", level);
+    console.log("requiresLevel", upgrade.requiresLevel);
+    console.log("missing", missingLevelRequirement);
     let buttonBackgroundColor = "#282c34";
     let buttonColor = "white";
 
@@ -103,43 +102,39 @@ const UpgradeButton = ({ upgradeName, upgrade }) => {
             buttonColor = "gray";
         }
     }
-
+    if (missingRequirement || missingLevelRequirement) {
+        buttonColor = "gray";
+    }
     // this will change the color of the button to teal if the upgrade is unique and unlocked or if the upgrade is maxed
-    if (isMaxed || (unique && unlockedUpgrades[upgradeName])) {
+    if (isMaxed || unique) {
         buttonBackgroundColor = "#2b6070";
     }
 
     let buttonText = "";
-    // sets the
-    if (!unlockedUpgrades[upgradeName]) {
-        buttonText = `${upgrade.unlock} exp`;
-    } else if (unlockedUpgrades[upgradeName]) {
-        if (upgrade.unique) {
-            buttonText = `Unlocked`;
-        } else {
-            buttonText = `${upgrade.unlock} exp`;
-        }
-    }
+    buttonText = `${upgrade.unlock} exp`;
 
     return (
         <button
             style={{ ...styles.button, backgroundColor: buttonBackgroundColor, color: buttonColor }}
-            disabled={isMaxed || unique || xpTooLow}
+            disabled={isMaxed || unique || xpTooLow || missingRequirement || missingLevelRequirement}
             onClick={() => handleUpgrade(upgradeName)}
         >
             <p style={styles.upgradeName}>{upgrade.name}</p>
             {upgrade.unique && <p style={styles.upgradeSingleUse}>Unique</p>}
+            {missingRequirement && <p style={styles.upgradeRequires}>Requires {upgrades[upgrade.requires].name}</p>}
+            {missingLevelRequirement && <p style={styles.upgradeRequires}>Requires level {upgrade.requiresLevel}</p>}
             <p style={styles.upgradeDescription}>{handleDescriptionPlaceholders(upgrade.description, intervalTime)}</p>
 
             {upgrade.max && (
                 <>
-                    <p style={styles.upgradeOwned}>
+                    <p style={isMaxed ? styles.upgradeMaxed : styles.upgradeQuantityOwned}>
                         Owned: {unlockedUpgrades[upgradeName] ? unlockedUpgrades[upgradeName].amount : 0}
                     </p>
                     <p style={styles.upgradeSingleUse}>Max: {upgrade.max}</p>
                 </>
             )}
-            {isMaxed ? null : <p style={styles.buttonText}>{buttonText}</p>}
+            {isMaxed || isUniqueAndOwned ? null : <p style={styles.buttonText}>{buttonText}</p>}
+            {isUniqueAndOwned && <p style={styles.uniqueAndOwned}>Active</p>}
         </button>
     );
 };
@@ -190,29 +185,52 @@ const styles = {
         alignItems: "center",
     },
     upgradeName: {
-        fontSize: "14px",
+        fontSize: "16px",
         fontWeight: "bold",
         margin: "5px",
     },
-    upgradeSingleUse: {
-        fontSize: "10px",
+    upgradeRequires: {
+        fontSize: "12px",
         margin: "0px",
         fontStyle: "italic",
-        color: "gold",
+        color: "#FF2200",
+        fontWeight: "bold",
+    },
+    upgradeSingleUse: {
+        fontSize: "10px",
+        marginTop: "0px",
+        marginBottom: "5px",
+        fontStyle: "italic",
     },
     upgradeDescription: {
         fontSize: "12px",
-        margin: "10px",
+        margin: "5px",
     },
-    upgradeOwned: {
+    upgradeQuantityOwned: {
         fontSize: "12px",
-        margin: "0px",
+        marginTop: "5px",
+        marginBottom: "2px",
         fontWeight: "bold",
+        color: "gold",
+    },
+    upgradeMaxed: {
+        fontSize: "12px",
+        marginTop: "5px",
+        marginBottom: "2px",
+        fontWeight: "bold",
+        color: "gold",
     },
     buttonText: {
         fontSize: "12px",
         marginTop: "5px",
         fontWeight: "bold",
+    },
+    uniqueAndOwned: {
+        fontSize: "12px",
+        marginTop: "5px",
+        marginBottom: "2px",
+        fontWeight: "bold",
+        color: "gold",
     },
 };
 

@@ -3,17 +3,27 @@ import TheButton from "./components/TheButton.js";
 import Upgrades from "./components/Upgrades.js";
 import { create } from "zustand";
 import { upgrades } from "./upgrades.js";
-import { clear } from "@testing-library/user-event/dist/clear";
+// import "./assets/monogram.ttf";
+
+const levelUp = (currentLevel, experienceToNextLevel) => ({
+    level: currentLevel + 1,
+    experienceToNextLevel: experienceToNextLevel * 10,
+});
 
 const useStore = create((set) => ({
     exp: 0,
+    gold: 0,
     unlockedUpgrades: {},
     baseClick: 1,
+    level: 1,
+    experienceToNextLevel: 100,
+    experienceGainedThisLevel: 0,
     highestExp: 0,
     intervalTime: 1000,
     baseInterval: 1000,
     intervalChanged: false,
     gameInterval: null,
+
     setGameLoop: (interval) =>
         set((state) => {
             let gameinterval = () => {
@@ -33,23 +43,45 @@ const useStore = create((set) => ({
 
     clicker: (cpsMult = 1) =>
         set((state) => {
-            if (Object.keys(state.unlockedUpgrades).length === 0) {
-                // If no upgrades are unlocked, simply return the baseClick value as exp.
-                const newExp = state.exp + state.baseClick;
-                return { exp: newExp, highestExp: newExp > state.highestExp ? newExp : state.highestExp };
-            } else {
-                // If there are unlocked upgrades, sum up the multipliers and then multiply them by baseClick.
-                const strengthSum = Object.values(state.unlockedUpgrades)
+            // If there are unlocked upgrades, sum up the multipliers and then multiply them by baseClick.
+            let strengthSum =
+                Object.values(state.unlockedUpgrades)
                     .filter((upgrade) => upgrade.type === "clicker")
                     .reduce(
                         (acc, upgrade) =>
                             acc + (upgrade.amount > 0 ? upgrade.strength * upgrade.amount : upgrade.strength),
                         0
-                    );
+                    ) || 1;
 
-                const newExp = state.exp + (strengthSum + state.baseClick) * cpsMult;
-                return { exp: newExp, highestExp: newExp > state.highestExp ? newExp : state.highestExp };
+            const newExp = state.exp + (strengthSum + state.baseClick) * cpsMult;
+            const xpGained = (strengthSum + state.baseClick) * cpsMult;
+            if (state.experienceGainedThisLevel + xpGained >= state.experienceToNextLevel) {
+                console.log("leveling up");
+                // need to call the levelUp function
+                const levelingUp = levelUp(state.level, state.experienceToNextLevel);
+                const experienceGainedThisLevel =
+                    xpGained + state.experienceGainedThisLevel - state.experienceToNextLevel;
+                return {
+                    exp: newExp,
+                    ...levelingUp,
+                    experienceGainedThisLevel: experienceGainedThisLevel,
+                    highestExp: newExp > state.highestExp ? newExp : state.highestExp,
+                };
             }
+            if (Object.keys(state.unlockedUpgrades).length === 0) {
+                // If no upgrades are unlocked, simply return the baseClick value as exp.
+                const newExp = state.exp + state.baseClick;
+                return {
+                    exp: newExp,
+                    highestExp: newExp > state.highestExp ? newExp : state.highestExp,
+                    experienceGainedThisLevel: state.experienceGainedThisLevel + state.baseClick,
+                };
+            }
+            return {
+                exp: newExp,
+                highestExp: newExp > state.highestExp ? newExp : state.highestExp,
+                experienceGainedThisLevel: state.experienceGainedThisLevel + xpGained,
+            };
         }),
 
     // this function will buy an upgrade, if an upgrade has the singlePurchase property set to true, it will only be able to be purchased once
@@ -119,7 +151,7 @@ const updateInterval = () => {
         gameLoop();
     }
 };
-console.log("is called");
+
 gameLoop();
 
 function App() {
