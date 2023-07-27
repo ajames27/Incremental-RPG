@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/Incremental-RPG/static/css/main.f1b91e11.css",
-    "main.js": "/Incremental-RPG/static/js/main.03d26d63.js",
+    "main.css": "/Incremental-RPG/static/css/main.47c1a8b1.css",
+    "main.js": "/Incremental-RPG/static/js/main.33643a7e.js",
     "static/js/787.a9a893be.chunk.js": "/Incremental-RPG/static/js/787.a9a893be.chunk.js",
     "index.html": "/Incremental-RPG/index.html",
-    "main.f1b91e11.css.map": "/Incremental-RPG/static/css/main.f1b91e11.css.map",
-    "main.03d26d63.js.map": "/Incremental-RPG/static/js/main.03d26d63.js.map",
+    "main.47c1a8b1.css.map": "/Incremental-RPG/static/css/main.47c1a8b1.css.map",
+    "main.33643a7e.js.map": "/Incremental-RPG/static/js/main.33643a7e.js.map",
     "787.a9a893be.chunk.js.map": "/Incremental-RPG/static/js/787.a9a893be.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.f1b91e11.css",
-    "static/js/main.03d26d63.js"
+    "static/css/main.47c1a8b1.css",
+    "static/js/main.33643a7e.js"
   ]
 }
